@@ -131,16 +131,7 @@ func writeStructs(config Configuration, output []byte) error {
 }
 
 func formatName(name string) string {
-	parts := strings.Split(name, "_")
-	newName := ""
-	for _, p := range parts {
-		if len(p) < 1 {
-			continue
-		}
-		newName = newName + strings.Replace(p, string(p[0]), strings.ToUpper(string(p[0])), 1)
-	}
-
-	newName = strings.Replace(newName, "Id", "ID", -1) // for golint
+	newName := lintName(strings.Title(name))
 	// If a first charactor of the table is number, add "A" to the top
 	if unicode.IsNumber(rune(newName[0])) {
 		newName = "A" + newName

@@ -4,6 +4,19 @@ db2structs
 db2structs produce golang structs from running DB.
 
 
+Example::
+
+   // UserInfo
+   // +model
+   type UserInfo struct {
+           UserID        int64     `sql:"column:user_id;primary_key;not null"`
+           Email         string    `sql:"column:email;not null"`
+           Password      string    `sql:"column:password;not null"`
+           Name          string    `sql:"column:name;not null"`
+           CreateDate    time.Time `sql:"column:create_date;not null"`
+           UpdateDate    time.Time `sql:"column:update_date;not null"`
+   }
+
 install
 ==========
 
