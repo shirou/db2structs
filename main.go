@@ -20,6 +20,7 @@ var config Configuration
 type dbType interface {
 	getSchema(config Configuration) []ColumnSchema
 	goType(col *ColumnSchema) (string, string, error)
+	getEnvMap() map[string]string
 }
 
 type Configuration struct {
@@ -153,12 +154,20 @@ MYSQL_PASSWORD
 `)
 }
 
-func overrideByEnv() error {
-	v, ok := os.LookupEnv("MYSQL_HOST")
+const (
+	EnvHostKey     = "EnvHostKey"
+	EnvPortKey     = "EnvPortKey"
+	EnvDataBaseKey = "EnvDataBaseKey"
+	EnvUserKey     = "EnvUserKey"
+	EnvPasswordKey = "EnvPasswordKey"
+)
+
+func overrideByEnv(envMap map[string]string) error {
+	v, ok := os.LookupEnv(envMap[EnvHostKey])
 	if ok {
 		config.DbHost = v
 	}
-	v, ok = os.LookupEnv("MYSQL_PORT")
+	v, ok = os.LookupEnv(envMap[EnvPortKey])
 	if ok {
 		p, err := strconv.Atoi(v)
 		if err != nil {
@@ -166,15 +175,15 @@ func overrideByEnv() error {
 		}
 		config.DbPort = p
 	}
-	v, ok = os.LookupEnv("MYSQL_DATABASE")
+	v, ok = os.LookupEnv(envMap[EnvDataBaseKey])
 	if ok {
 		config.DbName = v
 	}
-	v, ok = os.LookupEnv("MYSQL_USER")
+	v, ok = os.LookupEnv(envMap[EnvUserKey])
 	if ok {
 		config.DbUser = v
 	}
-	v, ok = os.LookupEnv("MYSQL_PASSWORD")
+	v, ok = os.LookupEnv(envMap[EnvPasswordKey])
 	if ok {
 		config.DbPassword = v
 	}
@@ -198,15 +207,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	err := overrideByEnv()
-	if err != nil {
-		log.Fatal(err)
-	}
-	empty := Configuration{}
-	if config == empty {
-		usage()
-		os.Exit(0)
-	}
 	if config.DbType == "" {
 		config.DbType = "mysql"
 	}
@@ -214,6 +214,18 @@ func main() {
 	db, err := NewDB(config.DbType)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	err = overrideByEnv(db.getEnvMap())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if config.DbHost == "" {
+		usage()
+		os.Exit(0)
+	}
+	if config.DbType == "" {
+		config.DbType = "mysql"
 	}
 
 	columns := db.getSchema(config)

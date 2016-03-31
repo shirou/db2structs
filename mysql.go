@@ -78,3 +78,13 @@ func (m MySQL) goType(col *ColumnSchema) (string, string, error) {
 	}
 	return gt, requiredImport, nil
 }
+
+func (m MySQL) getEnvMap() map[string]string {
+	return map[string]string{
+		EnvHostKey:     "MYSQL_HOST",
+		EnvPortKey:     "MYSQL_PORT",
+		EnvDataBaseKey: "MYSQL_DATABASE",
+		EnvUserKey:     "MYSQL_USER",
+		EnvPasswordKey: "MYSQL_PASSWORD",
+	}
+}
