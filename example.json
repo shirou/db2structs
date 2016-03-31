@@ -1,0 +1,12 @@
+{
+  "db_type": "mysql",
+  "db_user": "db",
+  "db_host": "localhost",
+  "db_port": 3306,
+  "db_password": "",
+  "db_name": "test",
+  "output_file": "db_structs.go",
+  "pkg_name": "models",
+  "struct_tag" :"+test",
+  "sql_tag": "sql"
+}
